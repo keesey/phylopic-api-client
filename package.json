@@ -1,0 +1,33 @@
+{
+  "author": {
+    "email": "keesey+phylopic@gmail.com",
+    "name": "T. Michael Keesey"
+  },
+  "bugs": {
+    "url": "https://github.com/keesey/phylopic-api-client/issues"
+  },
+  "dependencies": {
+  },
+  "description": "Client for PhyloPic's Application Programming Interface. (TypeScript)",
+  "devDependencies": {
+  },
+  "homepage": "https://github.com/keesey/phylopic-api-client#readme",
+  "keywords": [
+    "api",
+    "javascript",
+    "open",
+    "phylopic",
+    "typescript"
+  ],
+  "license": "MIT",
+  "name": "phylopic-api-client",
+  "private": false,
+  "main": "index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keesey/phylopic-api-client.git"
+  },
+  "scripts": {
+  },
+  "version": "2.0.0-alpha"
+}
