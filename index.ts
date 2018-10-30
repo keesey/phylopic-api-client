@@ -2,12 +2,6 @@ import Types from 'phylopic-api-types';
 import APIError from './src/APIError';
 export type Fetch = typeof fetch;
 const CONTENT_TYPE = 'application/vnd.phylopic.v2+json';
-const createBasicInit: (method?: string) => RequestInit = (method = 'GET') => ({
-    headers: new Headers({
-        'Accept': CONTENT_TYPE,
-    }),
-    method,
-});
 const createSetInit = (options: SetOptions) => {
     return {
         headers: new Headers({
@@ -105,16 +99,40 @@ export type NodeSortField = 'created' | 'modified' | 'names' | '-created' | '-mo
 export default class PhyloPicAPIClient {
     constructor(private fetch: Fetch, private baseURL = 'https://api.phylopic.org/') {
     }
+    public authorize(token: string) {
+        this.authorization = token;
+    }
+    public deauthorize() {
+        this.authorization = null;
+    }
     public async deleteImage(uuid: string) {
-        // :TODO: add authentication
-        await this.makeCall(`images/${uuid}`, createBasicInit('DELETE'));
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+                Authorization: this.authorization || '',
+            }),
+            method: 'DELETE',
+        };
+        await this.makeCall(`images/${uuid}`, init);
     }
     public async deleteNode(uuid: string) {
-        // :TODO: add authentication
-        await this.makeCall(`nodes/${uuid}`, createBasicInit('DELETE'));
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+                Authorization: this.authorization || '',
+            }),
+            method: 'DELETE',
+        };
+        await this.makeCall(`nodes/${uuid}`, init);
     }
     public async getAccount(uuid: string) {
-        const response = await this.makeCall(`account/${uuid}`, createBasicInit());
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall(`account/${uuid}`, init);
         return await response.json() as Types.Account;
     }
     public async getImageFile(uuid: string, options: ImageFileOptions = {}) {
@@ -126,12 +144,13 @@ export default class PhyloPicAPIClient {
             .filter(Boolean)
             .join('&');
         const path = `imagefiles/${uuid}${query ? `?${query}` : ''}`
-        const response = await this.makeCall(path, {
+        const init: RequestInit = {
             headers: new Headers({
-                'Accept': variant ? 'image/png' : 'image/svg+xml; image.png',
+                Accept: variant ? 'image/png' : 'image/svg+xml; image.png',
             }),
             method: 'GET',
-        });
+        };
+        const response = await this.makeCall(path, init);
         if (response.headers.get('Content-Type') === 'image/svg+xml') {
             return response.text();
         }
@@ -142,7 +161,13 @@ export default class PhyloPicAPIClient {
         if (options && options.embed && options.embed.size) {
             query.embed = setToArray(options.embed).join(' ');
         }
-        const response = await this.makeCall(`images/${uuid}${formatQuery(query)}`, createBasicInit());
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall(`images/${uuid}${formatQuery(query)}`, init);
         return await response.json() as Types.Image;
     }
     public async getImageSet(uuid: string, options: ImageSetOptions) {
@@ -156,11 +181,23 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.List<Types.Image>;
     }
     public async getImages() {
-        const response = await this.makeCall('images', createBasicInit());
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall('images', init);
         return await response.json() as Types.Domain;
     }
     public async getLicenses() {
-        const response = await this.makeCall('licenses', createBasicInit());
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall('licenses', init);
         return await response.json() as ReadonlyArray<Types.TitledLink>;
     }
     public async getNode(uuid: string, options?: { embed?: ReadonlySet<NodeEmbedField> }) {
@@ -168,7 +205,13 @@ export default class PhyloPicAPIClient {
         if (options && options.embed && options.embed.size) {
             query.embed = setToArray(options.embed).join(' ');
         }
-        const response = await this.makeCall(`nodes/${uuid}${formatQuery(query)}`, createBasicInit());
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall(`nodes/${uuid}${formatQuery(query)}`, init);
         return await response.json() as Types.Node;
     }
     public async getNodeSet(uuid: string, options: NodeSetOptions) {
@@ -179,19 +222,31 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.List<Types.Node>;
     }
     public async getNodes() {
-        const response = await this.makeCall('nodes', createBasicInit());
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall('nodes', init);
         return await response.json() as Types.Domain;
     }
     public async getRoot() {
-        const response = await this.makeCall('', createBasicInit());
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall('', init);
         return await response.json() as Types.Root;
     }
     public async patchImage(uuid: string, patch: Types.ImagePatch) {
-        // :TODO: add authentication
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
                 Accept: CONTENT_TYPE,
+                Authorization: this.authorization || '',
                 'Content-Type': CONTENT_TYPE,
             }),
             method: 'PATCH',
@@ -200,11 +255,11 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.Image;
     }
     public async patchNode(uuid: string, patch: Types.NodePatch) {
-        // :TODO: add authentication
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
                 Accept: CONTENT_TYPE,
+                Authorization: this.authorization || '',
                 'Content-Type': CONTENT_TYPE,
             }),
             method: 'PATCH',
@@ -216,11 +271,11 @@ export default class PhyloPicAPIClient {
         await this.makeCall('ping');
     }
     public async postImage(uuid: string, post: Types.ImagePost) {
-        // :TODO: add authentication
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
                 Accept: CONTENT_TYPE,
+                Authorization: this.authorization || '',
                 'Content-Type': CONTENT_TYPE,
             }),
             method: 'POST',
@@ -229,11 +284,11 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.Image;
     }
     public async postImageFile(file: File) {
-        // :TODO: add authentication
         const init: RequestInit = {
             body: await readBlob(file),
             headers: new Headers({
-                'Accept': CONTENT_TYPE,
+                Accept: CONTENT_TYPE,
+                Authorization: this.authorization || '',
                 'Content-Type': file.type,
             }),
             method: 'POST',
@@ -245,7 +300,7 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify({ uuids }),
             headers: new Headers({
-                'Accept': CONTENT_TYPE,
+                Accept: CONTENT_TYPE,
                 'Content-Type': CONTENT_TYPE,
             }),
             method: 'POST',
@@ -254,11 +309,11 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.EntityReference;
     }
     public async postNode(post: Types.NodePost) {
-        // :TODO: add authentication
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
                 Accept: CONTENT_TYPE,
+                Authorization: this.authorization || '',
                 'Content-Type': CONTENT_TYPE,
             }),
             method: 'POST',
@@ -270,7 +325,7 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify({ uuids }),
             headers: new Headers({
-                'Accept': CONTENT_TYPE,
+                Accept: CONTENT_TYPE,
                 'Content-Type': CONTENT_TYPE,
             }),
             method: 'POST',
@@ -279,11 +334,11 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.EntityReference;
     }
     public async postNodeWithUUID(uuid: string, post: Types.NodePost) {
-        // :TODO: add authentication
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
                 Accept: CONTENT_TYPE,
+                Authorization: this.authorization || '',
                 'Content-Type': CONTENT_TYPE,
             }),
             method: 'POST',
@@ -292,11 +347,11 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.Node;
     }
     public async putImageFile(uuid: string, file: File) {
-        // :TODO: add authentication
         const init: RequestInit = {
             body: await readBlob(file),
             headers: new Headers({
-                'Accept': CONTENT_TYPE,
+                Accept: CONTENT_TYPE,
+                Authorization: this.authorization || '',
                 'Content-Type': file.type,
             }),
             method: 'PUT',
@@ -305,7 +360,13 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.Image;
     }
     public async resolve(uri: string) {
-        const response = await this.makeCall(`resolve/${uri}`, createBasicInit());
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall(`resolve/${uri}`, init);
         if (response.status === 307) {
             const response2 = await this.makeCall(this.baseURL.replace(/\/$/, '') + response.headers.get('Location'));
             return [await response2.json() as Types.Node];
@@ -313,6 +374,7 @@ export default class PhyloPicAPIClient {
         const choices = await response.json() as Types.NodeChoices;
         return choices._embedded.choices;
     }
+    private authorization: string | null = null;
     private async makeCall(path: string, init?: RequestInit) {
         const response = await this.fetch(`${this.baseURL}${path}`, init);
         if (response.ok) {
