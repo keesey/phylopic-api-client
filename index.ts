@@ -2,11 +2,11 @@ import Types from 'phylopic-api-types';
 import APIError from './src/APIError';
 export type Fetch = typeof fetch;
 const CONTENT_TYPE = 'application/vnd.phylopic.v2+json';
-const createSetInit = (options: SetOptions) => {
+const createRangeInit = (options: RangeOptions) => {
     return {
         headers: new Headers({
             Accept: CONTENT_TYPE,
-            Range: `items=${options.range[0]}-${options.range[1]}`,
+            Range: `items=${options.range.join('-')}`,
         }),
         method: 'GET',
     } as RequestInit;
@@ -61,17 +61,22 @@ export interface ImageFileOptions {
     readonly download?: boolean;
     readonly variant?: ImageFileVariant;
 }
-interface SetOptions {
-    readonly created?: Readonly<[Date | null, Date | null]>,
+interface RangeOptions {
+    readonly range: Readonly<[number, number]>;
+}
+interface SetOptions extends RangeOptions {
+    readonly created?: Readonly<[Date | null, Date | null]>;
     readonly embed?: ReadonlySet<string>;
-    readonly modified?: Readonly<[Date | null, Date | null]>,
-    readonly range: Readonly<[number, number]>,
-    readonly sort?: ReadonlyArray<string>,
+    readonly modified?: Readonly<[Date | null, Date | null]>;
+    readonly sort?: ReadonlyArray<string>;
 }
 export interface ImageSetOptions extends SetOptions {
     readonly embed?: ReadonlySet<ImageEmbedField>;
     readonly licenseComponents?: ReadonlySet<LicenseComponent>;
-    readonly sort?: ReadonlyArray<ImageSortField>,
+    readonly sort?: ReadonlyArray<ImageSortField>;
+}
+export interface SearchOptions extends RangeOptions {
+    readonly query: string;
 }
 export type ImageEmbedField = 'contributor' | 'generalNode' | 'nodes' | 'specificNode';
 export type ImageSortField = 'created' | 'modified' | '-created' | '-modified';
@@ -171,7 +176,7 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.Image;
     }
     public async getImageSet(uuid: string, options: ImageSetOptions) {
-        const init: RequestInit = createSetInit(options)
+        const init: RequestInit = createRangeInit(options)
         const query = createSetQuery(options);
         if (options.licenseComponents && options.licenseComponents.size) {
             query.licensecomponents = setToArray(options.licenseComponents).join(' ');
@@ -215,7 +220,7 @@ export default class PhyloPicAPIClient {
         return await response.json() as Types.Node;
     }
     public async getNodeSet(uuid: string, options: NodeSetOptions) {
-        const init: RequestInit = createSetInit(options)
+        const init: RequestInit = createRangeInit(options)
         const query = createSetQuery(options);
         const url = `nodesets/${uuid}${formatQuery(query)}`
         const response = await this.makeCall(url, init);
@@ -374,6 +379,13 @@ export default class PhyloPicAPIClient {
         const choices = await response.json() as Types.NodeChoices;
         return choices._embedded.choices;
     }
+    public async searchNodes(options: SearchOptions) {
+        const init: RequestInit = createRangeInit(options)
+        const query = { query: options.query };
+        const url = `search/nodes${formatQuery(query)}`
+        const response = await this.makeCall(url, init);
+        return await response.json() as Types.NodeSearch;
+    }
     private authorization: string | null = null;
     private async makeCall(path: string, init?: RequestInit) {
         const response = await this.fetch(`${this.baseURL}${path}`, init);
@@ -386,6 +398,10 @@ export default class PhyloPicAPIClient {
                 throw new APIError(response.status, errors);
             }
         }
-        throw new APIError(response.status, []);
+        throw new APIError(response.status, [{
+            developerMessage: response.statusText,
+            type: response.status < 500 ? 'DEFAULT_4XX' : 'DEFAULT_5XX',
+            userMessage: 'An unexpected error occurred.'
+        }]);
     }
 }

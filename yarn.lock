@@ -273,7 +273,7 @@ path-parse@^1.0.5:
 
 "phylopic-api-types@git+https://github.com/keesey/phylopic-api-types":
   version "2.0.0-alpha"
-  resolved "git+https://github.com/keesey/phylopic-api-types#c74c6158322334203eb494e18a5e7314d548c2fd"
+  resolved "git+https://github.com/keesey/phylopic-api-types#7a911ed258350734d49ca19980c81a4161f93d53"
 
 resolve@^1.3.2:
   version "1.8.1"
