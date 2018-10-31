@@ -140,6 +140,20 @@ export default class PhyloPicAPIClient {
         const response = await this.makeCall(`account/${uuid}`, init);
         return await response.json() as Types.Account;
     }
+    public async getImage(uuid: string, options?: { embed?: ReadonlySet<ImageEmbedField> }) {
+        const query: { [key: string]: string; } = {};
+        if (options && options.embed && options.embed.size) {
+            query.embed = setToArray(options.embed).join(' ');
+        }
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: CONTENT_TYPE,
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall(`images/${uuid}${formatQuery(query)}`, init);
+        return await response.json() as Types.Image;
+    }
     public async getImageFile(uuid: string, options: ImageFileOptions = {}) {
         const { download, variant } = options;
         const query = [
@@ -160,20 +174,6 @@ export default class PhyloPicAPIClient {
             return response.text();
         }
         return response.blob();
-    }
-    public async getImage(uuid: string, options?: { embed?: ReadonlySet<ImageEmbedField> }) {
-        const query: { [key: string]: string; } = {};
-        if (options && options.embed && options.embed.size) {
-            query.embed = setToArray(options.embed).join(' ');
-        }
-        const init: RequestInit = {
-            headers: new Headers({
-                Accept: CONTENT_TYPE,
-            }),
-            method: 'GET',
-        };
-        const response = await this.makeCall(`images/${uuid}${formatQuery(query)}`, init);
-        return await response.json() as Types.Image;
     }
     public async getImageSet(uuid: string, options: ImageSetOptions) {
         const init: RequestInit = createRangeInit(options)
