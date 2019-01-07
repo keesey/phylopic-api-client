@@ -1,88 +1,16 @@
-import Types from 'phylopic-api-types';
-import APIError from './src/APIError';
+import Types, { DATA, IMAGES } from 'phylopic-api-types';
+import APIError from './APIError';
+import { ImageOptions } from './options/ImageOptions';
+import { ImageSetOptions } from './options/ImageSetOptions';
+import { NodeOptions } from './options/NodeOptions';
+import { NodeSetOptions } from './options/NodeSetOptions';
+import { SearchOptions } from './options/SearchOptions';
+import createRangeInit from './utilities/createRangeInit';
+import createSetQuery from './utilities/createSetQuery';
+import formatQuery from './utilities/formatQuery';
+import readBlob from './utilities/readBlob';
+import setToArray from './utilities/setToArray';
 export type Fetch = typeof fetch;
-const DATA_CONTENT_TYPE = 'application/vnd.phylopic.v2+json';
-const createRangeInit = (options: RangeOptions) => {
-    return {
-        headers: new Headers({
-            Accept: DATA_CONTENT_TYPE,
-            Range: `items=${options.range.join('-')}`,
-        }),
-        method: 'GET',
-    } as RequestInit;
-};
-const createSetQuery = (options: SetOptions) => {
-    const query: { [key: string]: string; } = {};
-    if (options.created) {
-        if (options.created[0]) {
-            query.created_gt = options.created[0].toISOString();
-        }
-        if (options.created[1]) {
-            query.created_lt = options.created[1].toISOString();
-        }
-    }
-    if (options.embed && options.embed.size) {
-        query.embed = setToArray(options.embed).join(' ');
-    }
-    if (options.modified) {
-        if (options.modified[0]) {
-            query.modified_gt = options.modified[0].toISOString();
-        }
-        if (options.modified[1]) {
-            query.modified_lt = options.modified[1].toISOString();
-        }
-    }
-    if (options.sort && options.sort.length) {
-        query.sort = options.sort.join(' ');
-    }
-    return query;
-};
-const formatQuery = (query: { [key: string]: string; }) => {
-    const keys = Object.keys(query);
-    return keys.length
-        ? `?${keys.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(query[key])}`).join('&')}`
-        : '';
-};
-const readBlob = async (blob: Blob) => new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onabort = reject;
-    reader.onerror = reject;
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.readAsBinaryString(blob);
-});
-const setToArray = <T>(s: ReadonlySet<T>) => {
-    const a: T[] = [];
-    for (const value of s) {
-        a.push(value);
-    }
-    return a.sort() as ReadonlyArray<T>;
-};
-interface RangeOptions {
-    readonly range: Readonly<[number, number]>;
-}
-interface SetOptions extends RangeOptions {
-    readonly created?: Readonly<[Date | null, Date | null]>;
-    readonly embed?: ReadonlySet<string>;
-    readonly modified?: Readonly<[Date | null, Date | null]>;
-    readonly sort?: ReadonlyArray<string>;
-}
-export interface ImageSetOptions extends SetOptions {
-    readonly embed?: ReadonlySet<ImageEmbedField>;
-    readonly licenseComponents?: ReadonlySet<LicenseComponent>;
-    readonly sort?: ReadonlyArray<ImageSortField>;
-}
-export interface SearchOptions extends RangeOptions {
-    readonly query: string;
-}
-export type ImageEmbedField = 'contributor' | 'generalNode' | 'nodes' | 'specificNode';
-export type ImageSortField = 'created' | 'modified' | '-created' | '-modified';
-export type LicenseComponent = 'by' | 'nc' | 'sa' | '-by' | '-nc' | '-sa';
-export type NodeEmbedField = 'childNodes' | 'contributor' | 'parentNode' | 'primaryImage';
-export interface NodeSetOptions extends SetOptions {
-    readonly embed?: ReadonlySet<NodeEmbedField>;
-    readonly sort?: ReadonlyArray<NodeSortField>,
-}
-export type NodeSortField = 'created' | 'modified' | 'names' | '-created' | '-modified' | '-names';
 export default class PhyloPicAPIClient {
     constructor(private fetch: Fetch, private baseURL = 'https://api.phylopic.org/') {
     }
@@ -95,7 +23,7 @@ export default class PhyloPicAPIClient {
     public async deleteImage(uuid: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
                 Authorization: this.authorization || '',
             }),
             method: 'DELETE',
@@ -105,7 +33,7 @@ export default class PhyloPicAPIClient {
     public async deleteNode(uuid: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
                 Authorization: this.authorization || '',
             }),
             method: 'DELETE',
@@ -115,7 +43,7 @@ export default class PhyloPicAPIClient {
     public async deleteSubmission(uuid: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
                 Authorization: this.authorization || '',
             }),
             method: 'DELETE',
@@ -125,21 +53,21 @@ export default class PhyloPicAPIClient {
     public async getAccount(uuid: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
             }),
             method: 'GET',
         };
         const response = await this.makeCall(`account/${uuid}`, init);
         return await response.json() as Types.Account;
     }
-    public async getImage(uuid: string, options?: { embed?: ReadonlySet<ImageEmbedField> }) {
+    public async getImage(uuid: string, options?: ImageOptions) {
         const query: { [key: string]: string; } = {};
         if (options && options.embed && options.embed.size) {
             query.embed = setToArray(options.embed).join(' ');
         }
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
             }),
             method: 'GET',
         };
@@ -159,7 +87,7 @@ export default class PhyloPicAPIClient {
     public async getImages() {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
             }),
             method: 'GET',
         };
@@ -169,21 +97,21 @@ export default class PhyloPicAPIClient {
     public async getLicenses() {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
             }),
             method: 'GET',
         };
         const response = await this.makeCall('licenses', init);
         return await response.json() as ReadonlyArray<Types.TitledLink>;
     }
-    public async getNode(uuid: string, options?: { embed?: ReadonlySet<NodeEmbedField> }) {
+    public async getNode(uuid: string, options?: NodeOptions) {
         const query: { [key: string]: string; } = {};
         if (options && options.embed && options.embed.size) {
             query.embed = setToArray(options.embed).join(' ');
         }
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
             }),
             method: 'GET',
         };
@@ -200,7 +128,7 @@ export default class PhyloPicAPIClient {
     public async getNodes() {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
             }),
             method: 'GET',
         };
@@ -210,7 +138,7 @@ export default class PhyloPicAPIClient {
     public async getRoot() {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
             }),
             method: 'GET',
         };
@@ -220,7 +148,7 @@ export default class PhyloPicAPIClient {
     public async getSubmission(uuid: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: 'image/*',
+                Accept: [...IMAGES].join(', '),
                 Authorization: this.authorization || '',
             }),
             method: 'GET',
@@ -235,9 +163,9 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
                 Authorization: this.authorization || '',
-                'Content-Type': DATA_CONTENT_TYPE,
+                'Content-Type': DATA,
             }),
             method: 'PATCH',
         };
@@ -248,9 +176,9 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
                 Authorization: this.authorization || '',
-                'Content-Type': DATA_CONTENT_TYPE,
+                'Content-Type': DATA,
             }),
             method: 'PATCH',
         };
@@ -264,9 +192,9 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
                 Authorization: this.authorization || '',
-                'Content-Type': DATA_CONTENT_TYPE,
+                'Content-Type': DATA,
             }),
             method: 'POST',
         };
@@ -277,8 +205,8 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify({ uuids }),
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
-                'Content-Type': DATA_CONTENT_TYPE,
+                Accept: DATA,
+                'Content-Type': DATA,
             }),
             method: 'POST',
         }
@@ -289,8 +217,8 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify({ uuids }),
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
-                'Content-Type': DATA_CONTENT_TYPE,
+                Accept: DATA,
+                'Content-Type': DATA,
             }),
             method: 'POST',
         }
@@ -301,9 +229,9 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
                 Authorization: this.authorization || '',
-                'Content-Type': DATA_CONTENT_TYPE,
+                'Content-Type': DATA,
             }),
             method: 'POST',
         };
@@ -314,7 +242,7 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: await readBlob(file),
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
                 Authorization: this.authorization || '',
                 'Content-Type': file.type,
             }),
@@ -326,7 +254,7 @@ export default class PhyloPicAPIClient {
     public async resolve(uri: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: DATA_CONTENT_TYPE,
+                Accept: DATA,
             }),
             method: 'GET',
         };
@@ -358,7 +286,7 @@ export default class PhyloPicAPIClient {
         if (response.ok) {
             return response;
         }
-        if (response.headers.get('content-type') === DATA_CONTENT_TYPE) {
+        if (response.headers.get('content-type') === DATA) {
             const errors: ReadonlyArray<Types.Error> = await response.json();
             if (errors && errors.length) {
                 throw new APIError(response.status, errors);

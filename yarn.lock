@@ -110,7 +110,7 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
-"definitelytyped-header-parser@github:Microsoft/definitelytyped-header-parser#production":
+definitelytyped-header-parser@Microsoft/definitelytyped-header-parser#production:
   version "0.0.0"
   resolved "https://codeload.github.com/Microsoft/definitelytyped-header-parser/tar.gz/e0561530379dfa01324a89936b75d90b20df9bd2"
   dependencies:
@@ -288,7 +288,7 @@ path-parse@^1.0.6:
 
 "phylopic-api-types@git+https://github.com/keesey/phylopic-api-types":
   version "2.0.0-alpha"
-  resolved "git+https://github.com/keesey/phylopic-api-types#f56b54649d396f9b30630109110616e31ce80e2c"
+  resolved "git+https://github.com/keesey/phylopic-api-types#ad0943508ba46e4bd1415690b81c1e884b45b01b"
   dependencies:
     "@types/is-uuid" "^1.0.0"
     is-uuid "^1.0.2"
@@ -379,7 +379,7 @@ tsutils@^2.27.2:
   dependencies:
     tslib "^1.8.1"
 
-typescript@^3.1.4:
+typescript@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.2.tgz#fe8101c46aa123f8353523ebdcf5730c2ae493e5"
   integrity sha512-VCj5UiSyHBjwfYacmDuc/NOk4QQixbE+Wn7MFJuS0nRuPQbof132Pw4u53dm264O8LPc2MVsc7RJNml5szurkg==

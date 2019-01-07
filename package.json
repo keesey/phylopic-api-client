@@ -12,7 +12,7 @@
   "description": "Client for PhyloPic's Application Programming Interface. (TypeScript)",
   "devDependencies": {
     "dtslint": "^0.3.0",
-    "typescript": "^3.1.4"
+    "typescript": "^3.2.2"
   },
   "homepage": "https://github.com/keesey/phylopic-api-client#readme",
   "keywords": [
@@ -25,7 +25,7 @@
   "license": "MIT",
   "name": "phylopic-api-client",
   "private": false,
-  "main": "index.ts",
+  "main": "src/index.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/keesey/phylopic-api-client.git"
