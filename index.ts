@@ -1,11 +1,11 @@
 import Types from 'phylopic-api-types';
 import APIError from './src/APIError';
 export type Fetch = typeof fetch;
-const CONTENT_TYPE = 'application/vnd.phylopic.v2+json';
+const DATA_CONTENT_TYPE = 'application/vnd.phylopic.v2+json';
 const createRangeInit = (options: RangeOptions) => {
     return {
         headers: new Headers({
-            Accept: CONTENT_TYPE,
+            Accept: DATA_CONTENT_TYPE,
             Range: `items=${options.range.join('-')}`,
         }),
         method: 'GET',
@@ -57,10 +57,6 @@ const setToArray = <T>(s: ReadonlySet<T>) => {
     }
     return a.sort() as ReadonlyArray<T>;
 };
-export interface ImageFileOptions {
-    readonly download?: boolean;
-    readonly variant?: ImageFileVariant;
-}
 interface RangeOptions {
     readonly range: Readonly<[number, number]>;
 }
@@ -80,20 +76,6 @@ export interface SearchOptions extends RangeOptions {
 }
 export type ImageEmbedField = 'contributor' | 'generalNode' | 'nodes' | 'specificNode';
 export type ImageSortField = 'created' | 'modified' | '-created' | '-modified';
-export type ImageFileVariant = 'basic32'
-    | 'basic64'
-    | 'basic128'
-    | 'basic256'
-    | 'basic512'
-    | 'basic1024'
-    | 'social1200x630'
-    | 'social440x220'
-    | 'square32'
-    | 'square64'
-    | 'square128'
-    | 'square256'
-    | 'square512'
-    | 'square1024';
 export type LicenseComponent = 'by' | 'nc' | 'sa' | '-by' | '-nc' | '-sa';
 export type NodeEmbedField = 'childNodes' | 'contributor' | 'parentNode' | 'primaryImage';
 export interface NodeSetOptions extends SetOptions {
@@ -113,7 +95,7 @@ export default class PhyloPicAPIClient {
     public async deleteImage(uuid: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
                 Authorization: this.authorization || '',
             }),
             method: 'DELETE',
@@ -123,17 +105,27 @@ export default class PhyloPicAPIClient {
     public async deleteNode(uuid: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
                 Authorization: this.authorization || '',
             }),
             method: 'DELETE',
         };
         await this.makeCall(`nodes/${uuid}`, init);
     }
+    public async deleteSubmission(uuid: string) {
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: DATA_CONTENT_TYPE,
+                Authorization: this.authorization || '',
+            }),
+            method: 'DELETE',
+        };
+        await this.makeCall(`submissions/${uuid}`, init);
+    }
     public async getAccount(uuid: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
             }),
             method: 'GET',
         };
@@ -147,33 +139,12 @@ export default class PhyloPicAPIClient {
         }
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
             }),
             method: 'GET',
         };
         const response = await this.makeCall(`images/${uuid}${formatQuery(query)}`, init);
         return await response.json() as Types.Image;
-    }
-    public async getImageFile(uuid: string, options: ImageFileOptions = {}) {
-        const { download, variant } = options;
-        const query = [
-            download ? 'download' : null,
-            variant ? `variant=${encodeURIComponent(variant)}` : null,
-        ]
-            .filter(Boolean)
-            .join('&');
-        const path = `imagefiles/${uuid}${query ? `?${query}` : ''}`
-        const init: RequestInit = {
-            headers: new Headers({
-                Accept: variant ? 'image/png' : 'image/svg+xml; image.png',
-            }),
-            method: 'GET',
-        };
-        const response = await this.makeCall(path, init);
-        if (response.headers.get('Content-Type') === 'image/svg+xml') {
-            return response.text();
-        }
-        return response.blob();
     }
     public async getImageSet(uuid: string, options: ImageSetOptions) {
         const init: RequestInit = createRangeInit(options)
@@ -188,7 +159,7 @@ export default class PhyloPicAPIClient {
     public async getImages() {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
             }),
             method: 'GET',
         };
@@ -198,7 +169,7 @@ export default class PhyloPicAPIClient {
     public async getLicenses() {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
             }),
             method: 'GET',
         };
@@ -212,7 +183,7 @@ export default class PhyloPicAPIClient {
         }
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
             }),
             method: 'GET',
         };
@@ -229,7 +200,7 @@ export default class PhyloPicAPIClient {
     public async getNodes() {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
             }),
             method: 'GET',
         };
@@ -239,20 +210,34 @@ export default class PhyloPicAPIClient {
     public async getRoot() {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
             }),
             method: 'GET',
         };
         const response = await this.makeCall('', init);
         return await response.json() as Types.Root;
     }
+    public async getSubmission(uuid: string) {
+        const init: RequestInit = {
+            headers: new Headers({
+                Accept: 'image/*',
+                Authorization: this.authorization || '',
+            }),
+            method: 'GET',
+        };
+        const response = await this.makeCall(`submissions/${uuid}`, init);
+        if (response.headers.get('Content-Type') === 'image/svg+xml') {
+            return response.text();
+        }
+        return response.blob();
+    }
     public async patchImage(uuid: string, patch: Types.ImagePatch) {
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
                 Authorization: this.authorization || '',
-                'Content-Type': CONTENT_TYPE,
+                'Content-Type': DATA_CONTENT_TYPE,
             }),
             method: 'PATCH',
         };
@@ -263,9 +248,9 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
                 Authorization: this.authorization || '',
-                'Content-Type': CONTENT_TYPE,
+                'Content-Type': DATA_CONTENT_TYPE,
             }),
             method: 'PATCH',
         };
@@ -279,95 +264,69 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
                 Authorization: this.authorization || '',
-                'Content-Type': CONTENT_TYPE,
+                'Content-Type': DATA_CONTENT_TYPE,
             }),
             method: 'POST',
         };
         const response = await this.makeCall(`images/${uuid}`, init);
         return await response.json() as Types.Image;
     }
-    public async postImageFile(file: File) {
-        const init: RequestInit = {
-            body: await readBlob(file),
-            headers: new Headers({
-                Accept: CONTENT_TYPE,
-                Authorization: this.authorization || '',
-                'Content-Type': file.type,
-            }),
-            method: 'POST',
-        }
-        const response = await this.makeCall('imagefiles', init);
-        return await response.json() as Types.Image;
-    }
     public async postImageSet(uuids: string[]) {
         const init: RequestInit = {
             body: JSON.stringify({ uuids }),
             headers: new Headers({
-                Accept: CONTENT_TYPE,
-                'Content-Type': CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
+                'Content-Type': DATA_CONTENT_TYPE,
             }),
             method: 'POST',
         }
         const response = await this.makeCall('imagesets', init);
         return await response.json() as Types.EntityReference;
     }
-    public async postNode(post: Types.NodePost) {
-        const init: RequestInit = {
-            body: JSON.stringify(post),
-            headers: new Headers({
-                Accept: CONTENT_TYPE,
-                Authorization: this.authorization || '',
-                'Content-Type': CONTENT_TYPE,
-            }),
-            method: 'POST',
-        };
-        const response = await this.makeCall('nodes', init);
-        return await response.json() as Types.Node;
-    }
     public async postNodeSet(uuids: string[]) {
         const init: RequestInit = {
             body: JSON.stringify({ uuids }),
             headers: new Headers({
-                Accept: CONTENT_TYPE,
-                'Content-Type': CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
+                'Content-Type': DATA_CONTENT_TYPE,
             }),
             method: 'POST',
         }
         const response = await this.makeCall('nodesets', init);
         return await response.json() as Types.EntityReference;
     }
-    public async postNodeWithUUID(uuid: string, post: Types.NodePost) {
+    public async postNode(uuid: string, post: Types.NodePost) {
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
                 Authorization: this.authorization || '',
-                'Content-Type': CONTENT_TYPE,
+                'Content-Type': DATA_CONTENT_TYPE,
             }),
             method: 'POST',
         };
         const response = await this.makeCall(`nodes/${uuid}`, init);
         return await response.json() as Types.Node;
     }
-    public async putImageFile(uuid: string, file: File) {
+    public async putSubmission(uuid: string, file: File) {
         const init: RequestInit = {
             body: await readBlob(file),
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
                 Authorization: this.authorization || '',
                 'Content-Type': file.type,
             }),
             method: 'PUT',
         }
-        const response = await this.makeCall(`imagefiles/${uuid}`, init);
+        const response = await this.makeCall(`submissions/${uuid}`, init);
         return await response.json() as Types.Image;
     }
     public async resolve(uri: string) {
         const init: RequestInit = {
             headers: new Headers({
-                Accept: CONTENT_TYPE,
+                Accept: DATA_CONTENT_TYPE,
             }),
             method: 'GET',
         };
@@ -378,6 +337,13 @@ export default class PhyloPicAPIClient {
         }
         const choices = await response.json() as Types.NodeChoices;
         return choices._embedded.choices;
+    }
+    public async searchImages(options: SearchOptions) {
+        const init: RequestInit = createRangeInit(options)
+        const query = { query: options.query };
+        const url = `search/images${formatQuery(query)}`
+        const response = await this.makeCall(url, init);
+        return await response.json() as Types.ImageSearch;
     }
     public async searchNodes(options: SearchOptions) {
         const init: RequestInit = createRangeInit(options)
@@ -392,7 +358,7 @@ export default class PhyloPicAPIClient {
         if (response.ok) {
             return response;
         }
-        if (response.headers.get('content-type') === CONTENT_TYPE) {
+        if (response.headers.get('content-type') === DATA_CONTENT_TYPE) {
             const errors: ReadonlyArray<Types.Error> = await response.json();
             if (errors && errors.length) {
                 throw new APIError(response.status, errors);
