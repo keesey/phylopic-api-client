@@ -11,7 +11,12 @@
   },
   "description": "Client for PhyloPic's Application Programming Interface. (TypeScript)",
   "devDependencies": {
-    "dtslint": "^0.3.0",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.12.0",
     "typescript": "^3.2.2"
   },
   "homepage": "https://github.com/keesey/phylopic-api-client#readme",
@@ -25,11 +30,18 @@
   "license": "MIT",
   "name": "phylopic-api-client",
   "private": false,
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/keesey/phylopic-api-client.git"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint ./src/**/*.ts",
+    "lint-fix": "tslint ./src/**/*.ts --fix",
+    "test": "mocha -r ts-node/register \"./src/**/*.spec.ts\"",
+    "postinstall": "tsc"
+  },
+  "types": "dist/index.d.ts",
   "version": "2.0.0-alpha"
 }

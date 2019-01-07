@@ -1,4 +1,21 @@
-import Types, { DATA, IMAGES } from 'phylopic-api-types';
+import {
+    DATA,
+    Domain,
+    EntityReference,
+    Error as PhyloPicError,
+    IMAGES,
+    Image,
+    ImagePatch,
+    ImagePost,
+    ImageSearch,
+    List,
+    NodeChoices,
+    NodePatch,
+    NodePost,
+    NodeSearch,
+    Root,
+    TitledLink,
+} from 'phylopic-api-types';
 import APIError from './APIError';
 import { ImageOptions } from './options/ImageOptions';
 import { ImageSetOptions } from './options/ImageSetOptions';
@@ -58,7 +75,7 @@ export default class PhyloPicAPIClient {
             method: 'GET',
         };
         const response = await this.makeCall(`account/${uuid}`, init);
-        return await response.json() as Types.Account;
+        return await response.json() as Account;
     }
     public async getImage(uuid: string, options?: ImageOptions) {
         const query: { [key: string]: string; } = {};
@@ -72,7 +89,7 @@ export default class PhyloPicAPIClient {
             method: 'GET',
         };
         const response = await this.makeCall(`images/${uuid}${formatQuery(query)}`, init);
-        return await response.json() as Types.Image;
+        return await response.json() as Image;
     }
     public async getImageSet(uuid: string, options: ImageSetOptions) {
         const init: RequestInit = createRangeInit(options)
@@ -82,7 +99,7 @@ export default class PhyloPicAPIClient {
         }
         const url = `imagesets/${uuid}${formatQuery(query)}`
         const response = await this.makeCall(url, init);
-        return await response.json() as Types.List<Types.Image>;
+        return await response.json() as List<Image>;
     }
     public async getImages() {
         const init: RequestInit = {
@@ -92,7 +109,7 @@ export default class PhyloPicAPIClient {
             method: 'GET',
         };
         const response = await this.makeCall('images', init);
-        return await response.json() as Types.Domain;
+        return await response.json() as Domain;
     }
     public async getLicenses() {
         const init: RequestInit = {
@@ -102,7 +119,7 @@ export default class PhyloPicAPIClient {
             method: 'GET',
         };
         const response = await this.makeCall('licenses', init);
-        return await response.json() as ReadonlyArray<Types.TitledLink>;
+        return await response.json() as ReadonlyArray<TitledLink>;
     }
     public async getNode(uuid: string, options?: NodeOptions) {
         const query: { [key: string]: string; } = {};
@@ -116,14 +133,14 @@ export default class PhyloPicAPIClient {
             method: 'GET',
         };
         const response = await this.makeCall(`nodes/${uuid}${formatQuery(query)}`, init);
-        return await response.json() as Types.Node;
+        return await response.json() as Node;
     }
     public async getNodeSet(uuid: string, options: NodeSetOptions) {
         const init: RequestInit = createRangeInit(options)
         const query = createSetQuery(options);
         const url = `nodesets/${uuid}${formatQuery(query)}`
         const response = await this.makeCall(url, init);
-        return await response.json() as Types.List<Types.Node>;
+        return await response.json() as List<Node>;
     }
     public async getNodes() {
         const init: RequestInit = {
@@ -133,7 +150,7 @@ export default class PhyloPicAPIClient {
             method: 'GET',
         };
         const response = await this.makeCall('nodes', init);
-        return await response.json() as Types.Domain;
+        return await response.json() as Domain;
     }
     public async getRoot() {
         const init: RequestInit = {
@@ -143,7 +160,7 @@ export default class PhyloPicAPIClient {
             method: 'GET',
         };
         const response = await this.makeCall('', init);
-        return await response.json() as Types.Root;
+        return await response.json() as Root;
     }
     public async getSubmission(uuid: string) {
         const init: RequestInit = {
@@ -159,7 +176,7 @@ export default class PhyloPicAPIClient {
         }
         return response.blob();
     }
-    public async patchImage(uuid: string, patch: Types.ImagePatch) {
+    public async patchImage(uuid: string, patch: ImagePatch) {
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
@@ -170,9 +187,9 @@ export default class PhyloPicAPIClient {
             method: 'PATCH',
         };
         const response = await this.makeCall(`images/${uuid}`, init);
-        return await response.json() as Types.Image;
+        return await response.json() as Image;
     }
-    public async patchNode(uuid: string, patch: Types.NodePatch) {
+    public async patchNode(uuid: string, patch: NodePatch) {
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
@@ -183,12 +200,12 @@ export default class PhyloPicAPIClient {
             method: 'PATCH',
         };
         const response = await this.makeCall(`nodes/${uuid}`, init);
-        return await response.json() as Types.Node;
+        return await response.json() as Node;
     }
     public async ping() {
         await this.makeCall('ping');
     }
-    public async postImage(uuid: string, post: Types.ImagePost) {
+    public async postImage(uuid: string, post: ImagePost) {
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
@@ -199,7 +216,7 @@ export default class PhyloPicAPIClient {
             method: 'POST',
         };
         const response = await this.makeCall(`images/${uuid}`, init);
-        return await response.json() as Types.Image;
+        return await response.json() as Image;
     }
     public async postImageSet(uuids: string[]) {
         const init: RequestInit = {
@@ -211,7 +228,7 @@ export default class PhyloPicAPIClient {
             method: 'POST',
         }
         const response = await this.makeCall('imagesets', init);
-        return await response.json() as Types.EntityReference;
+        return await response.json() as EntityReference;
     }
     public async postNodeSet(uuids: string[]) {
         const init: RequestInit = {
@@ -223,9 +240,9 @@ export default class PhyloPicAPIClient {
             method: 'POST',
         }
         const response = await this.makeCall('nodesets', init);
-        return await response.json() as Types.EntityReference;
+        return await response.json() as EntityReference;
     }
-    public async postNode(uuid: string, post: Types.NodePost) {
+    public async postNode(uuid: string, post: NodePost) {
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
@@ -236,7 +253,7 @@ export default class PhyloPicAPIClient {
             method: 'POST',
         };
         const response = await this.makeCall(`nodes/${uuid}`, init);
-        return await response.json() as Types.Node;
+        return await response.json() as Node;
     }
     public async putSubmission(uuid: string, file: File) {
         const init: RequestInit = {
@@ -249,7 +266,7 @@ export default class PhyloPicAPIClient {
             method: 'PUT',
         }
         const response = await this.makeCall(`submissions/${uuid}`, init);
-        return await response.json() as Types.Image;
+        return await response.json() as Image;
     }
     public async resolve(uri: string) {
         const init: RequestInit = {
@@ -261,9 +278,9 @@ export default class PhyloPicAPIClient {
         const response = await this.makeCall(`resolve/${uri}`, init);
         if (response.status === 307) {
             const response2 = await this.makeCall(this.baseURL.replace(/\/$/, '') + response.headers.get('Location'));
-            return [await response2.json() as Types.Node];
+            return [await response2.json() as Node];
         }
-        const choices = await response.json() as Types.NodeChoices;
+        const choices = await response.json() as NodeChoices;
         return choices._embedded.choices;
     }
     public async searchImages(options: SearchOptions) {
@@ -271,14 +288,14 @@ export default class PhyloPicAPIClient {
         const query = { query: options.query };
         const url = `search/images${formatQuery(query)}`
         const response = await this.makeCall(url, init);
-        return await response.json() as Types.ImageSearch;
+        return await response.json() as ImageSearch;
     }
     public async searchNodes(options: SearchOptions) {
         const init: RequestInit = createRangeInit(options)
         const query = { query: options.query };
         const url = `search/nodes${formatQuery(query)}`
         const response = await this.makeCall(url, init);
-        return await response.json() as Types.NodeSearch;
+        return await response.json() as NodeSearch;
     }
     private authorization: string | null = null;
     private async makeCall(path: string, init?: RequestInit) {
@@ -287,7 +304,7 @@ export default class PhyloPicAPIClient {
             return response;
         }
         if (response.headers.get('content-type') === DATA) {
-            const errors: ReadonlyArray<Types.Error> = await response.json();
+            const errors: ReadonlyArray<PhyloPicError> = await response.json();
             if (errors && errors.length) {
                 throw new APIError(response.status, errors);
             }

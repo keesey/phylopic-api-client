@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "outDir": "dist",
+        "strict": true,
+        "target": "es2016"
+    },
+    "exclude": [
+        "./**/*.spec.ts"
+    ],
+    "include": [
+        "./src/**/*.ts"
+    ],
+    "paths": {
+        "phylopic-api-types": "."
+    }
+}
