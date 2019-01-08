@@ -1,4 +1,5 @@
 import {
+    BINARY_IMAGES,
     DATA,
     Domain,
     EntityReference,
@@ -171,10 +172,11 @@ export default class PhyloPicAPIClient {
             method: 'GET',
         };
         const response = await this.makeCall(`submissions/${uuid}`, init);
-        if (response.headers.get('Content-Type') === 'image/svg+xml') {
-            return response.text();
+        const type = response.headers.get('Content-Type') ||'';
+        if (BINARY_IMAGES.has(type)) {
+            return response.blob();
         }
-        return response.blob();
+        return response.text();
     }
     public async patchImage(uuid: string, patch: ImagePatch) {
         const init: RequestInit = {
