@@ -183,8 +183,8 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
-                "Accept": DATA,
-                "Authorization": this.authorization || '',
+                'Accept': DATA,
+                'Authorization': this.authorization || '',
                 'Content-Type': DATA,
             }),
             method: 'PATCH',
@@ -196,8 +196,8 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(patch),
             headers: new Headers({
-                "Accept": DATA,
-                "Authorization": this.authorization || '',
+                'Accept': DATA,
+                'Authorization': this.authorization || '',
                 'Content-Type': DATA,
             }),
             method: 'PATCH',
@@ -212,8 +212,8 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
-                "Accept": DATA,
-                "Authorization": this.authorization || '',
+                'Accept': DATA,
+                'Authorization': this.authorization || '',
                 'Content-Type': DATA,
             }),
             method: 'POST',
@@ -225,7 +225,7 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify({ uuids }),
             headers: new Headers({
-                "Accept": DATA,
+                'Accept': DATA,
                 'Content-Type': DATA,
             }),
             method: 'POST',
@@ -237,7 +237,7 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify({ uuids }),
             headers: new Headers({
-                "Accept": DATA,
+                'Accept': DATA,
                 'Content-Type': DATA,
             }),
             method: 'POST',
@@ -249,8 +249,8 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: JSON.stringify(post),
             headers: new Headers({
-                "Accept": DATA,
-                "Authorization": this.authorization || '',
+                'Accept': DATA,
+                'Authorization': this.authorization || '',
                 'Content-Type': DATA,
             }),
             method: 'POST',
@@ -262,8 +262,8 @@ export default class PhyloPicAPIClient {
         const init: RequestInit = {
             body: await readBlob(file),
             headers: new Headers({
-                "Accept": DATA,
-                "Authorization": this.authorization || '',
+                'Accept': DATA,
+                'Authorization': this.authorization || '',
                 'Content-Type': file.type,
             }),
             method: 'PUT',
