@@ -1,5 +1,6 @@
+import { CacheableOptions } from './CacheableOptions';
 import { RangeOptions } from './RangeOptions';
-export declare interface SetOptions extends RangeOptions {
+export declare interface ListOptions extends CacheableOptions, RangeOptions {
     readonly created?: Readonly<[Date | null, Date | null]>;
     readonly embed?: ReadonlySet<string>;
     readonly modified?: Readonly<[Date | null, Date | null]>;

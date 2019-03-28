@@ -1,7 +1,7 @@
-import { SetOptions } from '../options/SetOptions';
-import setToArray from './setToArray';
-export const createSetQuery = (options: SetOptions) => {
-    const query: { [key: string]: string; } = {};
+import { ListOptions } from '../options/ListOptions';
+import setToArray from '../utilities/setToArray';
+export const createListQuery = (options: ListOptions) => {
+    const query: Record<string, string> = {};
     if (options.created) {
         if (options.created[0]) {
             query.created_gt = options.created[0].toISOString();
@@ -26,4 +26,4 @@ export const createSetQuery = (options: SetOptions) => {
     }
     return query;
 };
-export default createSetQuery;
+export default createListQuery;

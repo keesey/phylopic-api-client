@@ -3,7 +3,7 @@ export const readBlob = async (blob: Blob) => new Promise<string>((resolve, reje
         const reader = new FileReader();
         reader.onabort = reader.onerror = reject;
         reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsBinaryString(blob);
+        reader.readAsDataURL(blob);
     } catch (e) {
         reject(e);
     }
