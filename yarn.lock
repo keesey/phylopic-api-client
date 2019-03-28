@@ -7,11 +7,6 @@
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.7.tgz#1b8e33b61a8c09cbe1f85133071baa0dbf9fa71a"
   integrity sha512-2Y8uPt0/jwjhQ6EiluT0XCri1Dbplr0ZxfFXUz+ye13gaqE8u5gL5ppao1JrUYr9cIip5S6MvQzBS7Kke7U9VA==
 
-"@types/is-uuid@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@types/is-uuid/-/is-uuid-1.0.0.tgz#6d359d80c5a9f8f7ef5a23c685b14ffcb96d622c"
-  integrity sha512-FaiSi54J9lp09vZqlgHcbJaeq/G4h0dHqCxOXqCWzzjCaS2yVIx6xjZs7rnkTKu+C6xec+Ud1xtaONqaPHxApQ==
-
 "@types/mocha@^5.2.5":
   version "5.2.5"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-5.2.5.tgz#8a4accfc403c124a0bafe8a9fc61a05ec1032073"
@@ -332,9 +327,9 @@ once@^1.3.0:
     wrappy "1"
 
 parse-nomen@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/parse-nomen/-/parse-nomen-1.1.1.tgz#6cba4c5d58b08fd074883ce36fe6768e53ef6587"
-  integrity sha512-9RIPodLtqNo3mh73813D2eLtzaxGI0Q4HjpmjF6ZXhtB/gGYEMzC2JDs/V8Nwvak0lRbJ8AIjZW1yj4V/SZHLA==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/parse-nomen/-/parse-nomen-1.3.0.tgz#dc922c61cc971f330a0247add95420c78baebbf4"
+  integrity sha512-e2QyYZRmykZOYewFImtvn4ccpGcvRI7gBABB3ADFKkmECpcXHhXXdQcICXHiLNkfD70uhC4Q2xMX5bKYOZq8zw==
 
 path-is-absolute@^1.0.0:
   version "1.0.1"
@@ -353,9 +348,8 @@ pathval@^1.1.0:
 
 "phylopic-api-types@git+https://github.com/keesey/phylopic-api-types":
   version "2.0.0-alpha"
-  resolved "git+https://github.com/keesey/phylopic-api-types#ad0943508ba46e4bd1415690b81c1e884b45b01b"
+  resolved "git+https://github.com/keesey/phylopic-api-types#ae7c81b23ade91855fa970c7d863edb52efa96a0"
   dependencies:
-    "@types/is-uuid" "^1.0.0"
     is-uuid "^1.0.2"
     parse-nomen "^1.1.1"
 
@@ -473,6 +467,11 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
+
+yarn@^1.15.2:
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.15.2.tgz#7a064ca81ca34235f16376ad2f796ed432f9e285"
+  integrity sha512-DhqaGe2FcYKduO42d2hByXk7y8k2k42H3uzYdWBMTvcNcgWKx7xCkJWsVAQikXvaEQN2GyJNrz8CboqUmaBRrw==
 
 yn@^2.0.0:
   version "2.0.0"
