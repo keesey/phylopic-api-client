@@ -11,14 +11,14 @@
   },
   "description": "Client for PhyloPic's Application Programming Interface. (TypeScript)",
   "devDependencies": {
-    "@types/chai": "^4.1.7",
-    "@types/mocha": "^5.2.6",
+    "@types/chai": "^4.2.12",
+    "@types/mocha": "^8.0.3",
     "chai": "^4.2.0",
-    "mocha": "^6.0.2",
-    "ts-node": "^8.0.3",
-    "tslint": "^5.14.0",
-    "typescript": "^3.3.4000",
-    "yarn": "^1.15.2"
+    "mocha": "^8.1.3",
+    "ts-node": "^9.0.0",
+    "tslint": "^6.1.3",
+    "typescript": "^4.0.2",
+    "yarn": "^1.22.5"
   },
   "homepage": "https://github.com/keesey/phylopic-api-client#readme",
   "keywords": [
