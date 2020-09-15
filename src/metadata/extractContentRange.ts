@@ -1,23 +1,24 @@
+import { Headers as NodeFetchHeaders } from 'node-fetch';
 import APIError from '../api/APIError';
 export interface ContentRangeMetadata {
     readonly range: Readonly<[number, number]>;
     readonly total: number;
 }
-export const extractContentRange = (headers: Headers) => {
+export const extractContentRange = (headers: Headers | NodeFetchHeaders) => {
     try {
         const value = headers.get('content-range');
-        const match = value!.match(/^\s*items\s+(\*|\d+-\d+)\/(\*|\d+)\s*$/);
-        const range = match![1];
-        const total = parseInt(match![2], 10);
+        const match = value!.match(/^\s*items\s+(\*|\d+-\d+)\/(\*|\d+)\s*$/)!;
+        const range = match[1];
+        const total = parseInt(match[2], 10);
         if (range === '*') {
             return {
                 range: [NaN, NaN],
                 total,
             } as ContentRangeMetadata;
         }
-        const rangeMatch = range.match(/^(\d+)-(\d+)$/);
-        const start = parseInt(rangeMatch![1], 10);
-        const end = parseInt(rangeMatch![2], 10);
+        const rangeMatch = range.match(/^(\d+)-(\d+)$/)!;
+        const start = parseInt(rangeMatch[1], 10);
+        const end = parseInt(rangeMatch[2], 10);
         return {
             range: [start, end],
             total,
@@ -28,7 +29,7 @@ export const extractContentRange = (headers: Headers) => {
             field: 'Content-Range',
             type: 'DEFAULT_5XX',
             userMessage: 'There was an error in the data response. You may want to report this.',
-        }], headers);
+        }], { ...headers });
     }
 };
 export default extractContentRange;
