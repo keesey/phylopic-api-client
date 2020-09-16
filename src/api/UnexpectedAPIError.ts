@@ -1,3 +1,4 @@
+import { Response } from 'cross-fetch';
 import APIError from './APIError';
 export class UnexpectedAPIError extends APIError {
     constructor(response: Response) {

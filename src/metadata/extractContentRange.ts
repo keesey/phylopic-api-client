@@ -1,10 +1,10 @@
-import { Headers as NodeFetchHeaders } from 'node-fetch';
+import { Headers } from 'cross-fetch';
 import APIError from '../api/APIError';
 export interface ContentRangeMetadata {
     readonly range: Readonly<[number, number]>;
     readonly total: number;
 }
-export const extractContentRange = (headers: Headers | NodeFetchHeaders) => {
+export const extractContentRange = (headers: Headers) => {
     try {
         const value = headers.get('content-range');
         const match = value!.match(/^\s*items\s+(\*|\d+-\d+)\/(\*|\d+)\s*$/)!;

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
-import { Headers, HeadersInit } from 'node-fetch';
+import { Headers } from 'cross-fetch';
 import extractETag, { ETagMetadata } from './extractETag';
 describe('metadata/extractETag', () => {
     const itShouldWorkFor = (name: string, headersInit: HeadersInit, expected: ETagMetadata) => {

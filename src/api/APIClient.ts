@@ -1,3 +1,4 @@
+import fetch from 'cross-fetch';
 import {
     Account,
     DATA,
@@ -45,7 +46,7 @@ import { UnexpectedAPIError } from './UnexpectedAPIError';
 type EntityPath = 'images' | 'nodes' | 'submissions';
 const DEFAULT_API_OPTIONS: APIClientOptionsComplete = {
     apiKey: '',
-    baseURL: 'https://api./phylopic.org/',
+    baseURL: 'https://api.phylopic.org/',
     fetch,
     jwt: '',
 };
@@ -338,6 +339,7 @@ export class APIClient {
             method,
             redirect,
         };
+        // tslint:disable-next-line:no-shadowed-variable
         const { baseURL, fetch } = this.options;
         const response = await fetch(`${baseURL}${path}${formatQuery(query)}`, init);
         if (redirect === 'error' && response.status < 400 && response.status >= 300) {

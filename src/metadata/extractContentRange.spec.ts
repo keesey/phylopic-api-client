@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
-import { Headers, HeadersInit } from 'node-fetch';
+import { Headers } from 'cross-fetch';
 import extractContentRange, { ContentRangeMetadata } from './extractContentRange';
 describe('metadata/extractContentRange', () => {
     const itShouldWorkFor = (name: string, headersInit: HeadersInit, expected: ContentRangeMetadata) => {
@@ -9,7 +9,7 @@ describe('metadata/extractContentRange', () => {
             expect(actual).to.deep.equal(expected);
         });
     };
-    const itShouldThrowFor = (name: string, headersInit: Readonly<Record<string, string>>) => {
+    const itShouldThrowFor = (name: string, headersInit: HeadersInit) => {
         it(`should throw an error for ${name}`, () => {
             const headers = new Headers(headersInit);
             expect(() => extractContentRange(headers)).to.throw('Invalid range from API.');

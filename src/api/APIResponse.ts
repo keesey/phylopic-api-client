@@ -1,5 +1,5 @@
-export interface APIResponse<D, M> {
-    data: D;
-    metadata: M;
+export interface APIResponse<TData, TMetadata> {
+    data: TData;
+    metadata: TMetadata;
     status: number;
 }
